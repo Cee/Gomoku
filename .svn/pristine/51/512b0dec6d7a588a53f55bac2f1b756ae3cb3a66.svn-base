@@ -1,0 +1,235 @@
+package gomoku.netgame;
+
+import gomoku.constants.Constants;
+import gomoku.language.Language;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.Socket;
+public class GomokuClient extends NetGamePanel  {
+	private static final long serialVersionUID = 1L;
+	private String host="localhost";
+	int ifRetract = 0;
+	public GomokuClient(String ipString) {	
+		host = ipString;
+		myplayer=2;
+		otherplayer=1;
+		jbtStart.addActionListener(new StartListener());
+		jbtReturn.addActionListener(new ReturnListener());
+		jbtRetract.addActionListener(new RetractListener());
+		jbtGiveup.addActionListener(new GiveupListener());
+		jbtReview.addActionListener(new ReviewListener());
+		jbtNext.addActionListener(new NextListener());
+		jbtLast.addActionListener(new LastListener());
+		jbtAnimation.addActionListener(new AnimationListener());
+		connectToServer();
+	}
+
+	class StartListener implements ActionListener {
+		public void  actionPerformed (ActionEvent e) {
+//			InetAddress[] allhost =QTai.getAllOnline();
+//			String oldhost = allhost[0].toString();			
+//			char[] charArray = oldhost.toCharArray();	
+//			for (int i=1; i < charArray.length; i++) {
+//				System.out.print(charArray[i]);
+//				host = host+charArray[i];
+//			}
+//			System.out.println(host);
+			chessBoard.initial();
+			guiboard.renew();			
+			firstplayer=1;
+			jbtStart.setEnabled(false);
+			jbtGiveup.setEnabled(true);
+			jbtReview.setEnabled(false);
+			new RuleThread().start();
+			new CheckThread().start();
+			new RetractThread().start();
+			new GiveupThread().start();
+		}
+	}	
+	public void connectToServer() {
+		try {
+			socket = new Socket(host,7676);
+			retractSocket = new Socket(host,7677);
+			giveupSocket= new Socket(host,7678);
+		} catch (Exception e) {
+			System.err.println(e);
+		}		
+	}
+	class RuleThread extends Thread{
+		int Model;
+		public void run() {
+			try {
+				firstplayer=socket.getInputStream().read();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			if (firstplayer==1) {
+				while (guiboard.step<=3) {
+					try {
+						sleep(100);
+						int row, column;
+					    row = socket.getInputStream().read();
+					    column = socket.getInputStream().read();
+						guiboard.SetIcon(new Integer[]{row,column,guiboard.color});
+						guiboard.check(row, column);
+					    guiboard.step++;	
+					} catch (InterruptedException | IOException e) {
+						e.printStackTrace();
+					}
+				}
+				String Select=player2.choose();
+				if (Select.equals(Language.DOMORE)){
+				    guiboard.isClicked=false;
+					try {
+						socket.getOutputStream().write(0);
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
+					guiboard.AddListener();
+					while (guiboard.step<=5) {
+						try {
+							sleep(100);
+							if (guiboard.isClicked){
+								System.out.println(guiboard.step);
+								socket.getOutputStream().write(guiboard.SendRow);
+								socket.getOutputStream().write(guiboard.SendColumn);
+								guiboard.isClicked=false;
+							}
+						   
+						} catch (InterruptedException | IOException e) {
+							e.printStackTrace();
+						}
+					}
+					try {
+						otherColor=socket.getInputStream().read();
+						myColor=socket.getInputStream().read();
+						guiboard.activeplayer=socket.getInputStream().read();
+						startThread();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+				else if (Select.equals(Language.CHOOSEBLACK)){
+					try {
+						socket.getOutputStream().write(1);
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
+					myColor=Constants.BLACK;
+					otherColor=Constants.WHITE;
+					try {
+						socket.getOutputStream().write(myColor);
+						socket.getOutputStream().write(otherColor);
+						guiboard.activeplayer=1;
+						socket.getOutputStream().write(guiboard.activeplayer);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+					startThread();
+				}
+				else if (Select.equals(Language.CHOOSEWHITE)){
+					try {
+						socket.getOutputStream().write(1);
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
+					myColor=Constants.WHITE;
+					otherColor=Constants.BLACK;
+					try {
+						socket.getOutputStream().write(myColor);
+						socket.getOutputStream().write(otherColor);
+						guiboard.activeplayer=2;
+						socket.getOutputStream().write(guiboard.activeplayer);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+					startThread();
+				}
+			} else if (firstplayer==2){
+				guiboard.AddListener();
+				while (guiboard.step<=3) {
+					try {
+						sleep(100);
+						if (guiboard.isClicked) {
+							socket.getOutputStream().write(guiboard.SendRow);
+							socket.getOutputStream().write(guiboard.SendColumn);
+							guiboard.isClicked=false;
+						}
+					} catch (InterruptedException | IOException e) {
+						e.printStackTrace();
+					}
+				}
+			 try {
+				Model=socket.getInputStream().read();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			 if (Model==0) {
+					while (guiboard.step<=5) {
+						try {
+							sleep(100);
+							int row, column;
+						    row = socket.getInputStream().read();
+						    column = socket.getInputStream().read();
+							guiboard.SetIcon(new Integer[]{row,column,guiboard.color});
+							guiboard.check(row, column);
+						    guiboard.step++;				
+						} catch (InterruptedException | IOException e) {
+							e.printStackTrace();
+						}
+					}
+					String Select = player2.chooseagain();
+					if (Select.equals(Language.CHOOSEBLACK)) {
+						myColor=Constants.BLACK;
+						otherColor=Constants.WHITE;
+						try {
+							socket.getOutputStream().write(myColor);
+							socket.getOutputStream().write(otherColor);
+							guiboard.activeplayer=1;
+							socket.getOutputStream().write(guiboard.activeplayer);
+
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+
+						startThread();
+					} else if (Select.equals(Language.CHOOSEWHITE)) {
+						myColor=Constants.WHITE;
+						otherColor=Constants.BLACK;
+						try {
+							socket.getOutputStream().write(myColor);
+							socket.getOutputStream().write(otherColor);
+							guiboard.activeplayer=2;
+							socket.getOutputStream().write(guiboard.activeplayer);
+							
+
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+
+						startThread();
+					}
+			 }else if(Model==1) {
+					try {
+						otherColor=socket.getInputStream().read();
+						myColor=socket.getInputStream().read();
+						guiboard.activeplayer=socket.getInputStream().read();
+					} catch (IOException e) {
+						// TODO 自动生成的 catch 块
+						e.printStackTrace();
+					}
+					startThread();
+				}
+			 
+			}
+			
+		}
+	}
+	public void startThread() {
+		new NetThread(this).start();
+	}
+}
+

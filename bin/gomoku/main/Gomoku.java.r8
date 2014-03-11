@@ -1,0 +1,287 @@
+
+package gomoku.main;
+import gomoku.animation.AnimationEffect;
+import gomoku.constants.Constants;
+import gomoku.gamepanel.DoubleGamePanel;
+import gomoku.gamepanel.SingleGamePanel;
+import gomoku.gamepanel.special.DisturbPanel;
+import gomoku.gamepanel.special.DoubleMovablePanel;
+import gomoku.gamepanel.special.SingleMovablePanel;
+import gomoku.gamepanel.special.ThreePlayerGamePanel;
+import gomoku.language.Language;
+import gomoku.netgame.GomokuClient;
+import gomoku.netgame.GomokuServer;
+import gomoku.option.OptionPanel;
+import gomoku.theme.Theme;
+import java.awt.Cursor;
+import java.awt.Image;
+import java.awt.Point;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
+/**
+ * @author NorviNS���� luck
+ * @version 2013/4.1 ��Ϸ������+Menu�˵��ļ���
+ */
+public class Gomoku extends JFrame {
+	private static final long serialVersionUID = 1L;
+	public static Menu menuPanel;
+	public static Cursor cursor;
+	private turnListener turnlistener;
+	
+	public Gomoku() {
+		menuPanel = new Menu();
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		Image cursorImage = Toolkit.getDefaultToolkit().getImage(Theme.arrow);
+		cursor = Toolkit.getDefaultToolkit().createCustomCursor(cursorImage,
+				new Point(0, 0), "mycursor");
+		this.setCursor(cursor);
+		ImageIcon menuBg = new ImageIcon(Theme.menubg);
+		JLabel bgLabel = new JLabel(menuBg);
+		bgLabel.setBounds(0, 0, menuBg.getIconWidth(), menuBg.getIconHeight());
+		this.getLayeredPane().add(bgLabel, new Integer(Integer.MIN_VALUE));
+		JPanel jp = (JPanel) this.getContentPane();
+		jp.setOpaque(false);
+		this.add(menuPanel);
+		this.setVisible(true);
+		this.setSize(Constants.DEFAULT_WIDTH, Constants.DEFAULT_HEIGHT);
+		this.setResizable(false);
+		this.setLocationRelativeTo(null);
+		this.setTitle(Language.TITLE);
+		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+		this.setLocationRelativeTo(null);
+
+		this.requestFocus();
+		AddListener();
+	}
+	public void AddListener() {
+		this.addKeyListener(turnlistener = new turnListener());
+	}
+	public void RemoveListener() {
+		this.removeKeyListener(turnlistener);
+	}
+	public void AddSingle() {
+		this.add(new SingleGamePanel());
+	}
+
+	public void AddDouble() {
+		this.add(new DoubleGamePanel());
+	}
+
+	public void AddThree() {
+		this.add(new ThreePlayerGamePanel());
+	}
+	public void addDoubleMovable() {
+		this.add(new DoubleMovablePanel());
+	}
+	public void addSingleMovable(){
+		this.add(new SingleMovablePanel());
+	}
+	public void addDisturb() {
+		this.add(new DisturbPanel());
+	}
+	public void AddServer() {
+		this.add(new GomokuServer());
+	}
+	public void addOptionPanel(){
+		this.add(new OptionPanel());
+	}
+	public void AddClient() {
+		this.add( new GomokuClient());
+	}
+
+	class turnListener extends KeyAdapter{
+		public void keyTyped(KeyEvent e) {
+		}
+
+		@Override
+		public void keyReleased(KeyEvent e) {
+		}
+
+		@Override
+		public void keyPressed(KeyEvent e) {
+			if(e.getKeyCode()==KeyEvent.VK_A||e.getKeyCode()==KeyEvent.VK_LEFT){
+				//Menu.Allinvisible();
+				RemoveListener();
+				new LeftThread().start();
+				AnimationEffect.turnLeft(MenuPanel.quickList);
+			
+			}
+			else if(e.getKeyCode()==KeyEvent.VK_D||e.getKeyCode()==KeyEvent.VK_RIGHT){
+				//Menu.Allinvisible();
+				RemoveListener();
+				new RightThread().start();
+				AnimationEffect.turnRight(MenuPanel.quickList);
+			}
+		}
+	}
+	class RightThread extends Thread {
+		public void run() {
+			/*
+			 * FocusEffect
+			 * 
+			MenuPanel.quickList.get(3).setIcon(new ImageIcon(Language.QUICK));
+			MenuPanel.quickList.get(3).setSize(120,32);
+			*/
+			for(int x=1;x<21;x=x+1){
+				AnimationEffect.moveRight(MenuPanel.quickList, x);
+				try{
+					Thread.sleep(60);
+				}
+				catch(InterruptedException ex){
+					ex.printStackTrace();
+				}
+			}
+			/*
+			 * FocusEffect
+			 * 
+			MenuPanel.quickList.get(2).setIcon(new ImageIcon(Language.QUICK_CURRENT));
+			MenuPanel.quickList.get(2).setSize(350,60);
+			*/
+			AddListener();
+		}
+	}
+	
+	class LeftThread extends Thread {
+		public void run() {
+			for(int x=1;x<21;x=x+1){
+				AnimationEffect.moveLeft(MenuPanel.quickList, x);
+				try{
+					Thread.sleep(60);
+				}
+				catch(InterruptedException ex){
+					ex.printStackTrace();
+				}
+			}
+			AddListener();
+		}
+	}	
+	/**
+	 * 
+	 * @author NorviNS���� luck
+	 * @version 2013.3.31 23:28 �˵�����
+	 * 
+	 * 
+	 */
+	public class Menu extends MenuPanel {
+		private static final long serialVersionUID = 1L;
+		public Menu() {
+			jbtSingle.addActionListener(new SingleActionListener());
+			jbtDouble.addActionListener(new DoubleActionListener());
+			jbtFinalPhase.addActionListener(new FinalPhaseActionListener());
+			jbtReview.addActionListener(new ReviewActionListener());
+			jbtQuit.addActionListener(new QuitActionListener());
+			jbtInformation.addActionListener(new InformationActionListener());
+			jbtHelp.addActionListener(new HelpActionListener());
+			jbtOption.addActionListener(new OptionActionListener());
+			jbtQuickMode.addActionListener(new QuickListener());
+			jbtCareerMode.addActionListener(new CareerListener());
+			jbtNetGame.addActionListener(new NetListener());
+		}
+		public void HideMenu() {
+			this.setVisible(false);
+		}
+		class SingleActionListener implements ActionListener {
+			public void actionPerformed(ActionEvent e) {
+				HideMenu();
+				AddSingle();
+			}
+		}
+		class DoubleActionListener implements ActionListener {
+			public void actionPerformed(ActionEvent e) {
+				HideMenu();
+//				addDoubleMovable();
+//				addSingleMovable();
+				AddDouble();
+//				addDisturb();
+			}
+		}
+		class FinalPhaseActionListener implements ActionListener {
+			public void actionPerformed(ActionEvent e) {
+			}
+		}
+
+		class ReviewActionListener implements ActionListener {
+			public void actionPerformed(ActionEvent e) {
+
+			}
+		}
+
+		class OptionActionListener implements ActionListener {
+			public void actionPerformed(ActionEvent e) {
+				HideMenu();
+				addOptionPanel();
+			}
+		}
+
+		class QuitActionListener implements ActionListener {
+			public void actionPerformed(ActionEvent e) {
+				System.exit(0);
+			}
+		}
+
+		class HelpActionListener implements ActionListener {
+			public void actionPerformed(ActionEvent e) {
+				Allinvisible();
+				helpPanel.setVisible(true);
+			}
+		}
+
+		class InformationActionListener implements ActionListener {
+			public void actionPerformed(ActionEvent e) {
+				Allinvisible();
+
+			}
+		}
+		class LanguageListener implements ActionListener {
+			public void actionPerformed(ActionEvent e) {
+
+			}
+		}
+
+		class SoundListener implements ActionListener {
+			public void actionPerformed(ActionEvent e) {
+			}
+		}
+
+		class ThemeListener implements ActionListener {
+			public void actionPerformed(ActionEvent e) {
+			}
+		}
+
+		class QuickListener implements ActionListener {
+			public void actionPerformed(ActionEvent e) {
+				Allinvisible();
+				quickPanel.setVisible(true);
+			}
+		}
+
+		class CareerListener implements ActionListener {
+			public void actionPerformed(ActionEvent e) {
+				HideMenu();
+			}
+		}			
+		class NetListener implements ActionListener {
+			public void actionPerformed(ActionEvent e) {
+				HideMenu();	
+//				AddServer();
+				AddClient();
+			}
+		}
+
+		public void Allinvisible() {
+			quickPanel.setVisible(false);
+			// careerPanel.setVisible(false);
+			// infoPanel.setVisible(false);
+			// helpPanel.setVisible(false);
+		}
+	}
+}

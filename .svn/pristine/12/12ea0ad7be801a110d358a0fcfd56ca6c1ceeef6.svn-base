@@ -1,0 +1,230 @@
+package gomoku.gamepanel;
+
+import gomoku.constants.Constants;
+import gomoku.language.Language;
+import gomoku.main.guiboard.DoubleGuiBoard;
+import gomoku.main.guiboard.Threeguiboard;
+import gomoku.theme.Theme;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
+/**
+ * 
+ * @author  NorviNS
+ *
+ */
+public class UIPanel extends JPanel{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	protected JButton jbtReturn;
+	protected JButton jbtStart;
+	protected JButton jbtRetract;
+	protected JButton jbtReview;
+	protected JButton jbtGiveup;
+	protected JButton jbtExit;
+	protected JButton jbtNext;
+	protected JButton jbtLast;
+	protected JButton jbtAnimation;
+	protected JLabel gameBgLabel;
+	protected JPanel Reviewpanel;
+	protected JPanel MenuPanel;
+	
+	protected JPanel shellPanel;
+	protected JLabel jlbShell1;
+	protected JLabel jlbShell2;
+	protected JLabel jlbClock1;
+	protected JLabel jlbClock2;
+	
+	protected JLabel jlbPlayer1;
+	protected JLabel jlbPlayer2;
+	
+	public DoubleGuiBoard guiboard = new DoubleGuiBoard();
+	public UIPanel() {
+		this.setLayout(null);
+		ImageIcon gameBg = new ImageIcon(Theme.gamebg);
+		gameBgLabel = new JLabel(gameBg); 
+		gameBgLabel.setBounds(0,0,gameBg.getIconWidth(),gameBg.getIconHeight());
+		MenuPanel = new JPanel();
+		MenuPanel.setLayout(null);
+		MenuPanel.setBounds(30,530,800,200);
+		
+		ImageIcon startIcon = new ImageIcon(Language.START);
+		jbtStart = new JButton(startIcon);
+		jbtStart.setBounds(0,0,startIcon.getIconWidth(),startIcon.getIconHeight());
+		jbtStart.setContentAreaFilled(false);
+		jbtStart.setBorderPainted(false);
+		MenuPanel.add(jbtStart);
+		
+		ImageIcon giveUpIcon = new ImageIcon(Language.GIVEUP);
+		jbtGiveup = new JButton(giveUpIcon);
+		jbtGiveup.setBounds(130,0,giveUpIcon.getIconWidth(),giveUpIcon.getIconHeight());
+		jbtGiveup.setContentAreaFilled(false);
+		jbtGiveup.setBorderPainted(false);
+		MenuPanel.add(jbtGiveup);
+		jbtGiveup.setEnabled(false);
+		
+		ImageIcon retractIcon = new ImageIcon(Language.RETRACT);
+		jbtRetract = new JButton(retractIcon);
+		jbtRetract.setBounds(260,0,retractIcon.getIconWidth(),retractIcon.getIconHeight());
+		jbtRetract.setEnabled(false); 
+		jbtRetract.setContentAreaFilled(false);
+		jbtRetract.setBorderPainted(false);
+		MenuPanel.add(jbtRetract);
+		
+		ImageIcon reviewIcon = new ImageIcon(Language.REVIEW);
+		jbtReview = new JButton(reviewIcon);
+		jbtReview.setBounds(390,0,reviewIcon.getIconWidth(),reviewIcon.getIconHeight());
+		jbtReview.setEnabled(false);
+		jbtReview.setContentAreaFilled(false);
+		jbtReview.setBorderPainted(false);
+		MenuPanel.add(jbtReview);
+		
+		ImageIcon returnIcon = new ImageIcon(Language.RETURN);
+		jbtReturn = new JButton (returnIcon);
+		jbtReturn.setBounds(520,0,returnIcon.getIconWidth(),returnIcon.getIconHeight());
+		jbtReturn.setContentAreaFilled(false);
+		jbtReturn.setBorderPainted(false);
+		MenuPanel.add(jbtReturn);
+		
+		ImageIcon exitIcon = new ImageIcon(Language.EXIT);
+		jbtExit = new JButton(exitIcon);
+		jbtExit.setBounds(650,0,exitIcon.getIconWidth(),exitIcon.getIconHeight());
+		jbtExit.setContentAreaFilled(false);
+		jbtExit.setBorderPainted(false);
+		MenuPanel.add(jbtExit);
+		
+		Reviewpanel = new JPanel();
+		Reviewpanel.setLayout(null);
+		Reviewpanel.setOpaque(false);
+		Reviewpanel.setBounds(700,0,200,600);
+		this.add(Reviewpanel);
+	
+		ImageIcon nextIcon = new ImageIcon(Language.NEXT);
+		jbtNext = new JButton(nextIcon);
+		jbtNext.setSize(nextIcon.getIconWidth(),nextIcon.getIconHeight());
+		jbtNext.setLocation(0,60);
+		jbtNext.setContentAreaFilled(false);
+		jbtNext.setBorderPainted(false);
+		jbtNext.setFocusPainted(false);
+		Reviewpanel.add(jbtNext);
+		
+		ImageIcon lastIcon = new ImageIcon(Language.LAST);
+		jbtLast = new JButton(Language.LAST);
+		jbtLast = new JButton(lastIcon);
+		jbtLast.setSize(lastIcon.getIconWidth(),lastIcon.getIconHeight());
+		jbtLast.setLocation(0,0);
+		jbtLast.setContentAreaFilled(false);
+		jbtLast.setBorderPainted(false);
+		jbtLast.setFocusPainted(false);
+		Reviewpanel.add(jbtLast);
+		Reviewpanel.setVisible(false);
+		
+		ImageIcon animationIcon = new ImageIcon(Language.ANIMATION);
+		jbtAnimation = new JButton (animationIcon);
+		jbtAnimation.setSize(lastIcon.getIconWidth(),lastIcon.getIconHeight());
+		jbtAnimation.setLocation(0,120);
+		jbtAnimation.setContentAreaFilled(false);
+		jbtAnimation.setBorderPainted(false);
+		jbtAnimation.setFocusPainted(false);
+		Reviewpanel.add(jbtAnimation);
+		
+		/*
+		 * shellPanel
+		 */
+		shellPanel = new JPanel();
+		shellPanel.setOpaque(false);
+		shellPanel.setLayout(null);
+		shellPanel.setBounds(0,0,800,600);
+		shellPanel.setVisible(true);
+		this.add(shellPanel);
+		
+		
+		/*
+		 * PersonImage1
+		 */
+		ImageIcon whiteShell = new ImageIcon(Theme.whitePlayer);
+		jlbShell1 = new JLabel();
+		jlbShell1.setIcon(whiteShell);
+		jlbShell1.setBounds(0,200,145,415);
+		shellPanel.add(jlbShell1);
+		
+		/*
+		 * PersonImage2
+		 */
+		ImageIcon blackShell = new ImageIcon(Theme.blackPlayer);
+		jlbShell2 = new JLabel();
+		jlbShell2.setIcon(blackShell);
+		jlbShell2.setBounds(650,200,145,415);
+		shellPanel.add(jlbShell2);
+		
+		/*
+		 *clock1 
+		 */
+		jlbClock1 = new JLabel("300");
+		jlbClock1.setBounds(0,100,145,100);
+		jlbClock1.setFont(new Font(Constants.STARNIGHTFONT,Font.BOLD,Constants.FONTSIZEBIG));
+		jlbClock1.setForeground(Color.WHITE);
+		jlbClock1.setHorizontalAlignment(SwingConstants.CENTER);
+//		jlbClock1.setOpaque(true);
+		shellPanel.add(jlbClock1);
+		
+		/*
+		 * clock2
+		 */
+		jlbClock2 = new JLabel("300");
+		jlbClock2.setBounds(650,100,145,100);
+		jlbClock2.setFont(new Font(Constants.STARNIGHTFONT,Font.BOLD,Constants.FONTSIZEBIG));
+		jlbClock2.setForeground(Color.WHITE);
+		jlbClock2.setHorizontalAlignment(SwingConstants.CENTER);
+//		jlbClock2.setOpaque(true);
+		shellPanel.add(jlbClock2);
+		
+		MenuPanel.setOpaque(false);
+		this.add(MenuPanel);
+		/*
+		 * represent color
+		 */
+		
+		jlbPlayer1 = new JLabel();
+		jlbPlayer1.setBounds(0,200,145,100);
+		jlbPlayer1.setFont(new Font(Constants.STARNIGHTFONT,Font.BOLD,Constants.FONTSIZEBIG));
+		jlbPlayer1.setForeground(Color.WHITE);
+		jlbPlayer1.setHorizontalAlignment(SwingConstants.CENTER);
+//		jlbPlayer1.setOpaque(true);
+		shellPanel.add(jlbPlayer1);
+		
+		jlbPlayer2 = new JLabel();
+		jlbPlayer2.setBounds(650,200,145,100);
+		jlbPlayer2.setFont(new Font(Constants.STARNIGHTFONT,Font.BOLD,Constants.FONTSIZEBIG));
+		jlbPlayer2.setForeground(Color.WHITE);
+		jlbPlayer2.setHorizontalAlignment(SwingConstants.CENTER);
+//		jlbPlayer2.setOpaque(true);
+		shellPanel.add(jlbPlayer2);
+		
+		JPanel panel1 = new JPanel();
+		panel1.setPreferredSize(new Dimension(200,100));
+		panel1.setOpaque(false);
+		panel1.setBounds(0,0,100,600);
+		this.add(BorderLayout.WEST,panel1);
+		setguiboard();
+		this.add(gameBgLabel);
+		
+		this.setOpaque(false);
+	}
+	public void setguiboard() {
+		guiboard=new DoubleGuiBoard();
+		guiboard.setOpaque(false);
+		guiboard.setBounds(150,50,520,520);
+		this.add(guiboard);
+	}
+}

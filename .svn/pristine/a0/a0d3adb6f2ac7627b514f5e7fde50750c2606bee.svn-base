@@ -1,0 +1,69 @@
+package gomoku.gamepanel.special;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import gomoku.achievement.PlayTimes;
+import gomoku.gamepanel.GamePanel;
+import gomoku.gamepanel.GamePanel.AnimationListener;
+import gomoku.gamepanel.GamePanel.CheckWinThread;
+import gomoku.gamepanel.GamePanel.ExitListener;
+import gomoku.gamepanel.GamePanel.GiveupListener;
+import gomoku.gamepanel.GamePanel.LastListener;
+import gomoku.gamepanel.GamePanel.NextListener;
+import gomoku.gamepanel.GamePanel.RetractListener;
+import gomoku.gamepanel.GamePanel.ReturnListener;
+import gomoku.gamepanel.GamePanel.ReviewListener;
+import gomoku.main.guiboard.DisturbGuiboard;
+import gomoku.main.guiboard.DoubleMoveableGuiboard;
+import gomoku.player.HumanPlayer;
+
+public class DisturbPanel extends GamePanel{
+	public DisturbPanel() {
+		jbtExit.addActionListener(new ExitListener());
+		jbtStart.addActionListener(new StartListener());
+		jbtRetract.addActionListener(new RetractListener());
+		jbtGiveup.addActionListener(new GiveupListener());
+		jbtReview.addActionListener(new ReviewListener());
+		jbtReturn.addActionListener(new ReturnListener());
+		jbtNext.addActionListener(new NextListener());
+		jbtLast.addActionListener(new LastListener());
+		jbtAnimation.addActionListener(new AnimationListener());
+		guiboard.player1 = new HumanPlayer("humanplayer1");
+		guiboard.player2 = new HumanPlayer("humanplayer2");
+		guiboard.Single=false;
+	}
+	class StartListener implements ActionListener{
+		public void actionPerformed (ActionEvent event ){
+			PlayTimes.addPlayTimes();
+			jbtRetract.setEnabled(true);
+			jbtReview.setEnabled(false);
+			jbtGiveup.setEnabled(true);
+			guiboard.renew();
+			guiboard.AddListener();
+			new CheckWinThread().start();
+			new DisturbThread().start();
+		}
+	}
+	class DisturbThread extends Thread {
+		public void run() {
+			while (!guiboard.isWin) {
+				int sleeptime = (int) (Math.random()*6000);
+				try {
+					sleep(sleeptime);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				guiboard.disturb();		
+			}
+		
+		}
+	}
+	public void setguiboard() {
+		
+		guiboard=new DisturbGuiboard();
+		guiboard.setOpaque(false);
+		guiboard.setBounds(150,50,520,520);
+		this.add(guiboard);
+	}
+}

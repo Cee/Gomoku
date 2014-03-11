@@ -1,0 +1,105 @@
+package gomoku.netgame;
+
+import gomoku.language.Language;
+import gomoku.theme.Theme;
+
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.net.Socket;
+
+import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
+public class NetUIPanel extends JPanel{
+		private static final long serialVersionUID = 1L;
+		protected JButton jbtReturn;
+		protected JButton jbtStart;
+		protected JButton jbtRetract;
+		protected JButton jbtReview;
+		protected JButton jbtGiveup;
+		protected JButton jbtNext;
+		protected JButton jbtLast;
+		protected JButton jbtAnimation;
+		protected JLabel gameBgLabel;
+		protected JPanel Reviewpanel;
+		protected JPanel MenuPanel;
+		Socket socket;
+		Socket retractSocket;
+		Socket giveupSocket;
+		NetGuiBoard guiboard = new NetGuiBoard(socket,retractSocket);
+		/**
+		 * @author luck 
+		 * @version 2013.4.2 15:26
+		 * 特殊版本的UI 
+		 * 有待修改
+		 */
+		public NetUIPanel() {
+			this.setLayout(null);
+			ImageIcon gameBg = new ImageIcon(Theme.gamebg);
+			gameBgLabel = new JLabel(gameBg); 
+			gameBgLabel.setBounds(0,0,gameBg.getIconWidth(),gameBg.getIconHeight());
+			MenuPanel = new JPanel();
+			MenuPanel.setBounds(30,500,800,200);
+			
+			jbtStart = new JButton(new ImageIcon(Language.START));
+			jbtStart.setBounds(130,400,200,100);
+			jbtStart.setContentAreaFilled(false);
+			jbtStart.setBorderPainted(false);
+			MenuPanel.add(jbtStart);
+			
+			jbtGiveup = new JButton(new ImageIcon(Language.GIVEUP));
+			jbtGiveup.setContentAreaFilled(false);
+			jbtGiveup.setBorderPainted(false);
+			MenuPanel.add(jbtGiveup);
+			jbtGiveup.setEnabled(false);
+			
+			jbtRetract = new JButton(new ImageIcon(Language.RETRACT));
+			jbtRetract.setEnabled(false); 
+			jbtRetract.setContentAreaFilled(false);
+			jbtRetract.setBorderPainted(false);
+			MenuPanel.add(jbtRetract);
+			
+			jbtReview = new JButton(new ImageIcon(Language.REVIEW)); 
+			jbtReview.setEnabled(false);
+			jbtReview.setContentAreaFilled(false);
+			jbtReview.setBorderPainted(false);
+			MenuPanel.add(jbtReview);
+			jbtReturn = new JButton (new ImageIcon(Language.RETURN));
+			jbtReturn.setContentAreaFilled(false);
+			jbtReturn.setBorderPainted(false);
+			MenuPanel.add(jbtReturn);
+			
+			Reviewpanel = new JPanel();
+			Reviewpanel.setLayout(new BoxLayout(Reviewpanel,BoxLayout.Y_AXIS));
+			Reviewpanel.setOpaque(false);
+			Reviewpanel.setBounds(700,0,200,600);
+			this.add(Reviewpanel);
+		
+			jbtNext = new JButton(Language.NEXT);
+			Reviewpanel.add(jbtNext);
+			
+			jbtLast = new JButton(Language.LAST);
+			Reviewpanel.add(jbtLast);
+			Reviewpanel.setVisible(false);
+			
+			jbtAnimation = new JButton (Language.ANIMATION);
+			Reviewpanel.add(jbtAnimation);
+			
+			MenuPanel.setOpaque(false);
+			this.add(MenuPanel);
+			
+			JPanel panel1 = new JPanel();
+			panel1.setPreferredSize(new Dimension(200,100));
+			panel1.setOpaque(false);
+			panel1.setBounds(0,0,100,600);
+			this.add(BorderLayout.WEST,panel1);
+			guiboard.setOpaque(false);
+			guiboard.setBounds(150,50,520,520);
+			this.add(guiboard);
+			this.add(gameBgLabel);
+			this.setOpaque(false);
+		}
+	}

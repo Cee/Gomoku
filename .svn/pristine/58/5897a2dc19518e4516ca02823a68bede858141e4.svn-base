@@ -1,0 +1,283 @@
+package gomoku.gamepanel;
+
+import gomoku.chesshandle.ReviewHandle;
+import gomoku.language.Language;
+import gomoku.main.Gomoku;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+/**
+ * 
+ * @author luck
+ * @version 2013.3.30
+ *  锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷
+ *  
+ */
+public class GamePanel extends UIPanel {
+	/**
+	 * 
+	 */
+	protected static final long serialVersionUID = 1L;
+    protected int whofirst = 0 ;
+	protected int firstplayer=1;
+	protected String isChanged;
+	protected String selectSwap;
+	protected int color_of_Player1;
+	protected int color_of_Player2;
+	ReviewHandle reviewHandle = new ReviewHandle();
+	public void exit(){
+		this.setVisible(false);
+		Gomoku.menuPanel.setVisible(true);
+		guiboard.color=1;
+	}
+	/**
+	 * 
+	 * @author luck
+	 *@version 2013.3.30
+	 * 锟斤拷锟斤拷锟斤拷锟�
+	 */
+	public class GiveupListener implements ActionListener {
+		public void actionPerformed(ActionEvent event) {
+			DialogCreator.oneButtonDialog(Language.DontGiveUp,Language.LaoCao);
+			//int n = JOptionPane.showConfirmDialog(null, Language.MakeSureToGiveUp, Language.GiveUpTitle, JOptionPane.YES_NO_OPTION);
+			int n;
+			n = DialogCreator.twoButtonDialog(Language.GiveUpTitle, Language.MakeSureToGiveUp, Language.OK, Language.CANCEL);
+			if (n == 2) {
+				//JOptionPane.showConfirmDialog(null, Language.PraiseSentence, Language.Praise, JOptionPane.DEFAULT_OPTION);
+				DialogCreator.oneButtonDialog(Language.Praise, Language.PraiseSentence);
+			} else {
+				//JOptionPane.showConfirmDialog(null, Language.Disappointment+Language.PLAYER+guiboard.activeplayer+Language.GiveUpTitle, Language.BadPhenomenon, JOptionPane.DEFAULT_OPTION);
+				DialogCreator.oneButtonDialog(Language.BadPhenomenon, Language.Disappointment+Language.PLAYER+guiboard.activeplayer+Language.GiveUpTitle);
+				guiboard.isWin=true;
+			}
+		}
+	}
+	 public class ExitListener implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			System.exit(0);
+
+		}
+	}
+	class RemindThread extends Thread {
+		public void run() {
+			Integer[] temp = null;
+			while (!guiboard.isWin&&guiboard.getHistory().size()>0) {
+				temp = guiboard.getHistory().get(guiboard.getHistory().size()-1);
+				guiboard.SetIcon(temp);
+				try {
+					sleep(500);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				guiboard.removeIcon(temp);
+				try {
+					sleep(500);
+				} catch (InterruptedException e) {
+					// TODO 锟皆讹拷锟斤拷傻锟�catch 锟斤拷
+					e.printStackTrace();
+				}
+				if (guiboard.flag[temp[0]][temp[1]]==1) {
+					guiboard.SetIcon(temp);
+				}
+			}
+			
+		}
+	}
+/**
+ * 
+ * @author luck
+ *@version 2013.3.30
+ * 锟斤拷锟教硷拷锟斤拷
+ */
+	public class ReviewListener implements ActionListener {
+		public void actionPerformed(ActionEvent event ){
+			Reviewpanel.setVisible(true);
+			guiboard.refresh();
+			guiboard.removeListener();
+		}
+		
+	}
+/**
+ * 
+ * @author luck
+ * @version 2013.3.30
+ * 锟斤拷锟斤拷锟斤拷锟�
+ */
+
+	public class RetractListener implements ActionListener {
+	
+		public void actionPerformed(ActionEvent event ){
+			if (guiboard.Retractable) {
+				guiboard.unset();
+			}
+//			int size = guiboard.getHistory().size();
+//			for (int i = 0; i < size; i++) {
+//				Integer temp[] = guiboard.getHistory().get(i);
+//				if (temp != null) {
+//						guiboard.SetIcon(temp);
+//					}
+//			}
+		}	
+	}
+	
+/**
+ * 
+ * @author luck
+ *@version 2013.3.30
+ * 锟斤拷一锟斤拷
+ */
+	public class NextListener implements ActionListener {
+		public void actionPerformed(ActionEvent event ){
+			Integer temp[] = reviewHandle.next(guiboard.getHistory());
+			if (temp != null) {
+				guiboard.SetIcon(temp);
+			}
+		}
+	
+	}
+	/**
+	 * 
+	 * @author luck
+	 *@version 2013.3.30
+	 * 锟斤拷一锟斤拷
+	 */
+	public class LastListener implements ActionListener {
+		public void actionPerformed(ActionEvent event ){
+			Integer temp[] = reviewHandle.last(guiboard.getHistory());
+			if (temp != null) {
+				guiboard.removeIcon(temp);
+			}
+		}
+	
+	}
+	/**
+	 * 
+	 * @author luck
+	 *@version 2013.3.30
+	 * 锟斤拷锟斤拷
+	 */
+	public class AnimationListener implements ActionListener {
+		public void actionPerformed(ActionEvent event ){
+			guiboard.refresh();
+			reviewHandle.setSequence(0);
+			jbtNext.setEnabled(false);
+			jbtLast.setEnabled(false);
+			jbtAnimation.setEnabled(false);
+			new ReviewThread().start();
+			
+		}
+		class ReviewThread extends Thread {
+			public void run() {
+				
+				int size = guiboard.getHistory().size();
+				for (int i = 0; i < size; i++) {
+					try {
+						Integer temp[] = reviewHandle.next(guiboard.getHistory());
+						if (temp != null) {
+							guiboard.SetIcon(temp);
+						}
+
+						Thread.sleep(500);
+						
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+				jbtAnimation.setEnabled(true);
+				jbtNext.setEnabled(true);
+				jbtLast.setEnabled(true);
+			}
+		}
+	}			
+	public class ReturnListener implements ActionListener {
+		public void actionPerformed(ActionEvent event ){
+			exit();
+		}
+	}
+	/**
+	 * 
+	 * @author luck
+	 * @version 2013.4.2 15:28
+	 * 检测胜负的线程
+	 */
+	public class CheckWinThread extends Thread {
+		public void run() {
+			while (!guiboard.isWin) {
+				
+				try {
+					sleep(100);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+			jbtRetract.setEnabled(false);
+			jbtGiveup.setEnabled(false);
+			jbtReview.setEnabled(true);
+		}
+	}
+	/**
+	 * 
+	 * @author luck
+	 * 用于计时的线程
+	 */
+	class TimeThread extends Thread {
+		public void run() {
+			int number1=0;
+			int number2=0;
+			while (!guiboard.isWin) {
+				while (guiboard.activeplayer == 1) {
+					int time = 300;
+					jlbClock1.setText(time+"");
+					while (guiboard.activeplayer == 1 ) {
+						jlbClock1.setText(time+"");
+						try {
+							sleep(100);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+						number1++;
+						if (number1%10==0){
+							time--;
+							
+						}
+						
+					}
+					if (guiboard.isWin){
+						break;
+					}
+				}
+				jlbClock1.setText("300");
+				
+				if (guiboard.isWin)
+					break;
+				while (guiboard.activeplayer ==2) {
+					int time = 300;
+					jlbClock2.setText(time+"");
+					while (guiboard.activeplayer == 2 ) {
+						jlbClock2.setText(time+"");
+						try {
+							sleep(100);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+						number2++;
+						if (number2%10==0){
+							time--;
+							
+						}
+					}
+					if (guiboard.isWin){
+						break;
+					}
+					
+				}
+				jlbClock2.setText("300");
+
+				
+			}
+		
+			
+		}
+	}
+
+}

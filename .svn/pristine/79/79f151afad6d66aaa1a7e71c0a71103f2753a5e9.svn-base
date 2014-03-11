@@ -1,0 +1,105 @@
+package gomoku.help;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import gomoku.language.Language;
+import gomoku.main.Gomoku;
+import gomoku.main.MenuPanel;
+import gomoku.theme.Theme;
+
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
+public class HelpPanel extends JPanel{
+	private JLabel gameBgLabel;
+	private JButton jbtRuleInformation;
+	private JButton jbtSpecialModel;
+	private JButton jbtReturn;
+	private JButton jbtReturntoMenu;
+	 JLabel ruleInformationJLabel;
+	 JLabel specialModelJLabel;
+	public HelpPanel(){
+		this.setVisible(true);
+		this.setLayout(null);
+		System.out.println(Language.RULEINFORMATION);
+		ImageIcon ruleIcon = new ImageIcon(Language.RULEINFORMATION);
+		ImageIcon specialIcon = new ImageIcon(Language.SPECIALMODEL);
+		ruleInformationJLabel=new JLabel(ruleIcon);
+		specialModelJLabel= new JLabel(specialIcon);
+		ruleInformationJLabel.setBounds(100,100,ruleIcon.getIconWidth(),ruleIcon.getIconHeight());
+		ruleInformationJLabel.setVisible(false);
+		specialModelJLabel.setBounds(100,100,specialIcon.getIconWidth(),specialIcon.getIconHeight());
+		specialModelJLabel.setVisible(false);
+		this.add(ruleInformationJLabel);
+		this.add(specialModelJLabel);
+		jbtRuleInformation= new JButton("规则介绍");
+		jbtSpecialModel = new JButton("特殊模式");
+		jbtReturntoMenu = new JButton("回到主菜单");
+		jbtReturn = new JButton("回到帮助页面");
+		jbtRuleInformation.setBounds(100, 100, 300, 100);
+		jbtSpecialModel.setBounds(100, 200, 300, 100);
+		jbtReturntoMenu.setBounds(100,300,300,100);
+		jbtReturn.setBounds(100,500,100,50);
+		jbtReturn.setVisible(false);
+		jbtRuleInformation.addActionListener(new ruleInformationListener());
+		jbtSpecialModel.addActionListener(new specialModelListener());
+		jbtReturntoMenu.addActionListener(new returntoMenuListener());
+		jbtReturn.addActionListener(new returnListener());
+		this.add(jbtRuleInformation);
+		this.add(jbtSpecialModel);
+		this.add(jbtReturntoMenu);
+		this.add(jbtReturn);
+		ImageIcon gameBg = new ImageIcon(Theme.gamebg);
+		gameBgLabel = new JLabel(gameBg); 
+		gameBgLabel.setBounds(0,0,gameBg.getIconWidth(),gameBg.getIconHeight());
+		this.add(gameBgLabel);
+		
+	}
+	class ruleInformationListener implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			ruleInformationJLabel.setVisible(true);
+			jbtReturn.setVisible(true);
+			jbtReturntoMenu.setVisible(false);
+			jbtSpecialModel.setVisible(false);
+			jbtRuleInformation.setVisible(false);
+		}
+	}
+	class returntoMenuListener implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			returntoMenu();
+		}
+		
+	}
+	class specialModelListener implements ActionListener {
+
+		public void actionPerformed(ActionEvent e) {
+			specialModelJLabel.setVisible(true);
+			jbtReturn.setVisible(true);
+			jbtReturntoMenu.setVisible(false);
+			jbtSpecialModel.setVisible(false);
+			jbtRuleInformation.setVisible(false);
+		}
+		
+	}
+	class returnListener implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			specialModelJLabel.setVisible(false);
+			ruleInformationJLabel.setVisible(false);
+			jbtReturn.setVisible(false);
+			jbtReturntoMenu.setVisible(true);
+			jbtSpecialModel.setVisible(true);
+			jbtRuleInformation.setVisible(true);
+		}
+	}
+	public void returntoMenu(){
+		this.setVisible(false);
+		Gomoku.menuPanel.setVisible(true);		
+	}
+}

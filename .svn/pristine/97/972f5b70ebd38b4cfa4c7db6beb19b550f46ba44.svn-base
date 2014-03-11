@@ -1,0 +1,83 @@
+package gomoku.career;
+
+import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
+/**
+ * 
+ * 生涯模式
+ * 
+ * @author Xc
+ * @version 2012.5.8
+ * preview:
+ * 800 * ( 400 + 220 )
+ * 
+ * 
+ */
+
+
+public class LifePanel extends JPanel{
+	int pointer;
+
+	public LifePanel(){
+		
+		int pointer = 0;
+		
+		
+		ImageIcon bgPicture = new ImageIcon(bgNumber(pointer)+".png");
+		JLabel bgLabel = new JLabel(bgPicture);
+		bgLabel.setBounds(0, 0, bgPicture.getIconWidth() , bgPicture.getIconHeight());
+		
+		
+		JPanel textField = new JPanel();
+		
+		
+		textField.setBounds(10, 400, 780, 195);
+		textField.setBackground(new Color(3,23,4));
+		textField.setOpaque(false);
+		
+		//读取记录
+		
+		
+		
+		this.setSize(800, 600);
+		this.setLayout(null);
+		this.add(bgLabel);
+		this.add(textField);
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	}
+	
+	int bgNumber(int pointer){
+		return 0;
+	}
+	
+	void rePaint(){
+		
+	}
+	
+	
+	class GotoNextActionListener implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			pointer++;
+			rePaint();
+		}
+	}
+	
+	
+	
+	
+	
+}

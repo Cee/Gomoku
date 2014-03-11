@@ -1,0 +1,129 @@
+package gomoku.option;
+
+import java.awt.Color;
+import java.awt.Font;
+
+import gomoku.constants.Constants;
+import gomoku.language.Language;
+import gomoku.theme.Theme;
+
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
+public class OptionPanel extends JPanel{
+	protected JButton jbtThemeButton;
+	protected JLabel jlbTheme1;
+	protected JLabel jlbTheme2;
+	protected JLabel jlbTheme3;
+	
+	protected JButton jbtLanguaButton;
+	protected JLabel jlbLanguage1;
+	protected JLabel jlbLanguage2;
+	protected JLabel jlbLanguage3;
+	
+	protected JButton jbtMusicButton;
+	protected JLabel jlbMusic1;
+	protected JLabel jlbMusic2;
+	protected JLabel jlbMusic3;
+	
+	protected JButton jbtGoBackButton;
+	protected JLabel gameBgLabel;
+	protected JButton jbtSaveButton;
+	public OptionPanel(){
+		this.setVisible(true);
+		this.setLayout(null);
+		ImageIcon gameBg = new ImageIcon(Theme.gamebg);
+		gameBgLabel = new JLabel(gameBg); 
+		gameBgLabel.setBounds(0,0,gameBg.getIconWidth(),gameBg.getIconHeight());
+		
+		/*
+		 * Theme
+		 */
+		
+		jbtThemeButton = new JButton("主题");
+		jbtThemeButton.setBounds(20,30,300,50);
+		
+		jlbTheme1 = new JLabel("StarNight");
+		jlbTheme1.setBounds(50,80,200,50);
+		jlbTheme1.setForeground(Color.WHITE);
+		jlbTheme1.setFont(new Font(Constants.STARNIGHTFONT,Font.BOLD,Constants.FONTSIZEBIG));
+		
+		jlbTheme2 = new JLabel("Donuts");
+		jlbTheme2.setBounds(300,80,200,50);
+		jlbTheme2.setForeground(Color.WHITE);
+		jlbTheme2.setFont(new Font(Constants.STARNIGHTFONT,Font.BOLD,Constants.FONTSIZEBIG));
+		
+		jlbTheme3 = new JLabel("Gundam");
+		jlbTheme3.setBounds(550,80,200,50);
+		jlbTheme3.setForeground(Color.WHITE);
+		jlbTheme3.setFont(new Font(Constants.STARNIGHTFONT,Font.BOLD,Constants.FONTSIZEBIG));
+		
+		/*
+		 * Language
+		 */
+		
+		jbtLanguaButton = new JButton("语言");
+		jbtLanguaButton.setBounds(20,190,300,50);
+		
+		jlbLanguage1 = new JLabel("中文");
+		jlbLanguage1.setBounds(50,240,200,50);
+		jlbLanguage1.setForeground(Color.WHITE);
+		jlbLanguage1.setFont(new Font(Constants.STARNIGHTFONT,Font.BOLD,Constants.FONTSIZEBIG));
+		
+		jlbLanguage2 = new JLabel("English");
+		jlbLanguage2.setBounds(300,240,200,50);
+		jlbLanguage2.setForeground(Color.WHITE);
+		jlbLanguage2.setFont(new Font(Constants.STARNIGHTFONT,Font.BOLD,Constants.FONTSIZEBIG));
+		
+		jlbLanguage3 = new JLabel("日本语");
+		jlbLanguage3.setBounds(550,240,200,50);
+		jlbLanguage3.setForeground(Color.WHITE);
+		jlbLanguage3.setFont(new Font(Constants.STARNIGHTFONT,Font.BOLD,Constants.FONTSIZEBIG));
+		
+		/*
+		 * Music
+		 */
+		
+		jbtMusicButton = new JButton("音乐");
+		jbtMusicButton.setBounds(20,350,300,50);
+		
+		jlbMusic1 = new JLabel("中二正太美声");
+		jlbMusic1.setBounds(50,400,200,50);
+		jlbMusic1.setForeground(Color.WHITE);
+		jlbMusic1.setFont(new Font(Constants.STARNIGHTFONT,Font.BOLD,Constants.FONTSIZEBIG));
+		
+		jlbMusic2 = new JLabel("夏之随想");
+		jlbMusic2.setBounds(300,400,200,50);
+		jlbMusic2.setForeground(Color.WHITE);
+		jlbMusic2.setFont(new Font(Constants.STARNIGHTFONT,Font.BOLD,Constants.FONTSIZEBIG));
+		
+		jlbMusic3 = new JLabel("Invoke");
+		jlbMusic3.setBounds(550,400,200,50);
+		jlbMusic3.setForeground(Color.WHITE);
+		jlbMusic3.setFont(new Font(Constants.STARNIGHTFONT,Font.BOLD,Constants.FONTSIZEBIG));
+		
+		jbtGoBackButton = new JButton("回到主界面");
+		jbtGoBackButton.setBounds(400,500,300,50);
+		
+		jbtSaveButton = new JButton ("保存设置");
+		jbtSaveButton.setBounds(50,500,300,50);
+		this.add(jbtThemeButton);
+		this.add(jlbTheme1);
+		this.add(jlbTheme2);
+		this.add(jlbTheme3);
+		this.add(jbtLanguaButton);
+		this.add(jlbLanguage1);
+		this.add(jlbLanguage2);
+		this.add(jlbLanguage3);
+		this.add(jbtMusicButton);
+		this.add(jlbMusic1);
+		this.add(jlbMusic2);
+		this.add(jlbMusic3);
+		this.add(jbtGoBackButton);
+		this.add(jbtSaveButton);
+		this.add(gameBgLabel);
+	}
+
+}

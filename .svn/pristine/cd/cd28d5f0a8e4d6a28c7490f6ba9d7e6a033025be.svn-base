@@ -1,0 +1,183 @@
+package gomoku.option;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.io.IOException;
+
+import gomoku.language.Language;
+import gomoku.main.Gomoku;
+import gomoku.main.Start;
+import gomoku.sound.Media;
+import gomoku.sound.Sound;
+import gomoku.theme.Theme;
+
+public class newOptionPanel extends OptionPanel{
+	private String theme=Set.getTheme();
+	private String language=Set.getLanguage();
+	private String Music=Set.getBGM();	
+	public newOptionPanel(){
+		jbtGoBackButton.addActionListener(new goBackListener());
+		jbtSaveButton.addActionListener(new SaveListener());
+		jlbLanguage1.addMouseListener(new LanguageListener());
+		jlbLanguage2.addMouseListener(new LanguageListener());
+		jlbLanguage3.addMouseListener(new LanguageListener());
+		jlbTheme1.addMouseListener(new ThemeListener());
+		jlbTheme2.addMouseListener(new ThemeListener());
+		jlbTheme3.addMouseListener(new ThemeListener());
+		jlbMusic1.addMouseListener(new MusicListener());
+		jlbMusic2.addMouseListener(new MusicListener());
+		jlbMusic3.addMouseListener(new MusicListener());
+	}
+	public void goBack(){
+		this.setVisible(false);
+		Gomoku.menuPanel.setVisible(true);
+	}
+	class MusicListener implements MouseListener {
+
+		@Override
+		public void mouseClicked(MouseEvent e) {
+			if (e.getSource().equals(jlbMusic1)){
+				Music = "bgm1";
+			} else if (e.getSource().equals(jlbMusic2)) {
+				Music = "bgm2";
+			} else {
+				Music = "bgm3";
+			}
+		}
+
+		@Override
+		public void mousePressed(MouseEvent e) {
+			// TODO 自动生成的方法存根
+			
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent e) {
+			// TODO 自动生成的方法存根
+			
+		}
+
+		@Override
+		public void mouseEntered(MouseEvent e) {
+			// TODO 自动生成的方法存根
+			
+		}
+
+		@Override
+		public void mouseExited(MouseEvent e) {
+			// TODO 自动生成的方法存根
+			
+		}
+		
+	}
+	class ThemeListener implements MouseListener {
+
+		@Override
+		public void mouseClicked(MouseEvent e) {
+			if (e.getSource().equals(jlbTheme1)){
+				theme= "StarNight";
+			} else if (e.getSource().equals(jlbTheme2)){
+				theme= "Donuts";
+			} else {
+				theme="Gundam";
+			}
+		}
+
+		@Override
+		public void mousePressed(MouseEvent e) {
+			// TODO 自动生成的方法存根
+			
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent e) {
+			// TODO 自动生成的方法存根
+			
+		}
+
+		@Override
+		public void mouseEntered(MouseEvent e) {
+			// TODO 自动生成的方法存根
+			
+		}
+
+		@Override
+		public void mouseExited(MouseEvent e) {
+			// TODO 自动生成的方法存根
+			
+		}
+		
+	}
+	class LanguageListener implements MouseListener{
+
+		@Override
+		public void mouseClicked(MouseEvent e) {
+			if (e.getSource().equals(jlbLanguage1)){
+				language="Chinese";
+			} else if(e.getSource().equals(jlbLanguage2)){
+				language = "English";
+			} else {
+				language = "Japanese";
+			}
+		}
+
+		@Override
+		public void mousePressed(MouseEvent e) {
+			// TODO 自动生成的方法存根
+			
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent e) {
+			// TODO 自动生成的方法存根
+			
+		}
+
+		@Override
+		public void mouseEntered(MouseEvent e) {
+			// TODO 自动生成的方法存根
+			
+		}
+
+		@Override
+		public void mouseExited(MouseEvent e) {
+			// TODO 自动生成的方法存根
+			
+		}
+		
+	}
+	class goBackListener implements ActionListener{
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			goBack();
+		}
+		
+	}
+	class SaveListener implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			Set.setLanguage(language);
+			Set.setTheme(theme);
+			Set.setBGM(Music);
+			try {
+				Save.save();
+				Load.read();
+				
+			} catch (IOException | ClassNotFoundException e1) {
+				e1.printStackTrace();
+			}
+			Theme.load(Set.getTheme());
+			Language.load(Set.getLanguage());
+			Sound.load(Set.getBGM());
+			Media.playBGM(Sound.BGM);	
+			Start.gomoku.setVisible(false);
+			Start.gomoku = new Gomoku();
+		}
+		
+	}
+
+}

@@ -1,0 +1,265 @@
+package gomoku.main.guiboard;
+
+import gomoku.ai.AiPlayer;
+import gomoku.constants.Constants;
+import gomoku.gamepanel.DialogCreator;
+import gomoku.language.Language;
+import gomoku.player.HumanPlayer;
+import gomoku.player.Player;
+import gomoku.sound.Media;
+import gomoku.sound.Sound;
+import gomoku.theme.Theme;
+
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.IOException;
+import java.util.ArrayList;
+
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JOptionPane;
+/**
+ * 
+ * @author luck
+ * @version 2013.4.1.1:00
+ * 棋盘按钮
+ * 引入玩家
+ * 用户与数据的中转站
+ */
+public class DoubleGuiBoard extends GuiBoard {
+	private static final long serialVersionUID = 1L;
+	public boolean Single=true;
+	public boolean isOK = false;
+	private AiPlayer AI= new AiPlayer();
+	public Player player1 = new HumanPlayer("HumanPlayer1");
+	public Player player2 = new CpuPlayer("CpuPlayer2");
+	protected MouseHandle mousehandle[][] = new MouseHandle[Constants.SIZE][Constants.SIZE];
+
+	public int SendRow;
+	public int SendColumn;
+	public int SendColor;
+	public boolean isClicked=false;
+	public DoubleGuiBoard() {
+		for (int i=0;i<15;i++) {
+			for (int j=0;j<15;j++) {
+				mousehandle[i][j]= new MouseHandle(i,j);
+			}
+		}	
+	}	
+	/**
+	 * 给按钮加监听
+	 */
+	public void AddListener() {
+		for (int i=0;i<15;i++) {
+			for (int j=0;j<15;j++) {
+				buttonList[i][j].addMouseListener(mousehandle[i][j]);
+			}
+		}
+	}	
+	/**
+	 *  去除监听
+	 */
+	public void removeListener() {
+		for (int i=0;i<15;i++) {
+			for (int j=0;j<15;j++) {
+				buttonList[i][j].removeMouseListener(mousehandle[i][j]);
+			}
+		}
+	}
+	/**
+	 * 
+	 * @author luck
+	 * @version 2013.3.30
+	 * 内部类 监听
+	 */
+	class MouseHandle extends MouseAdapter {
+		int X;
+		int Y;
+		public MouseHandle(int a, int b) {
+			X=a;
+			Y=b;
+		}
+		/**
+		 * 监听1： 鼠标移动到相应位置显示choose图标
+		 * 
+		 */
+		public void mouseEntered(MouseEvent e) {
+			if (flag[X][Y] == 0) {
+				
+				((JButton) e.getSource()).setIcon(new ImageIcon(Theme.choose));
+			}
+		}
+		/**
+		 * 监听2：鼠标离开图标消失
+		 */
+		public void mouseExited(MouseEvent e) { 
+			if(flag[X][Y] == 0) {
+				((JButton) e.getSource()).setIcon(null);
+			}
+		}
+		/**
+		 * 监听3： 下去
+		 */
+		public void mouseClicked(MouseEvent e){
+			if(flag[X][Y] == 0) {
+				((JButton) e.getSource()).setIcon(new ImageIcon( color==Constants.BLACK? Theme.black:Theme.white));
+				Media.playSound(Sound.move);
+				check(X,Y);
+				flag[X][Y]=1;
+				Retractable=true;
+				step++;
+				CheckModel();
+			}
+		}
+	}
+	/*
+	 * 判断游戏模式
+	 */
+	public void CheckModel(){
+		if (Single){
+			SinglePlay();
+		} else {
+			DoublePlay();
+		}
+	}
+	public void removenewListener(){	
+	}
+	public void SinglePlay() {	
+		if (isWin) {
+			removeListener();
+			removenewListener();
+		}else if (isOK) {
+			changeplayer();
+			player2.play();
+		}
+		
+	
+		
+	}
+	public void DoublePlay() {
+		if (isWin) {
+			removeListener();
+			removenewListener();
+		} else if (isOK) {
+			changeplayer();
+		}
+	}	
+	
+	
+	/**
+	 * 
+	 * @param a
+	 * @param b
+	 * 判断胜负
+	 * @throws IOException 
+	 */
+	
+	public void check(int a, int b) { 
+		chessboard.set(a,b,color,activeplayer);
+		isWin=(!(checkWin.checkWin(a, b, chessboard.getChessBoard())==null));
+		if (isWin) {
+			removeListener();
+			//JOptionPane.showMessageDialog(null,color==1?Language.BLACKWIN:Language.WHITEWIN);
+			DialogCreator.oneButtonDialog(null, color==1?Language.BLACKWIN:Language.WHITEWIN);
+		}
+		color=color==1?2:1;
+	}
+
+
+
+	public Integer[] unset() {
+		Integer temp[] = chessboard.unset();
+		buttonList[temp[0]][temp[1]].setIcon(null);
+		flag[temp[0]][temp[1]]=0;
+		changecolor();
+		changeplayer();
+		Retractable=false;
+		return temp;
+	}
+	/**
+	 * 
+	 * @author luck
+	 * AI操作
+	 */
+	class CpuPlayer extends Player{
+		public CpuPlayer(String name) {
+			super(name);
+		}
+		/**
+		 * @override
+		 */
+		public String choose() {
+			String[] swapChoose = {Language.CHOOSEBLACK,Language.CHOOSEWHITE,Language.DOMORE};
+			int rand = (int)(Math.random() * swapChoose.length);
+			String selectSwap = swapChoose[rand];
+			return selectSwap;
+		}
+		/**
+		 * @override
+		 */
+		public String chooseagain() {
+			String[] swapChoose = {Language.CHOOSEBLACK,Language.CHOOSEWHITE};
+			int rand = (int)(Math.random() * swapChoose.length);
+			String selectSwap = swapChoose[rand];
+			return selectSwap;
+		}
+		/**
+		 * @override
+		 * 暂时是随机数模式 坐等AI
+		 */
+		public void play() {
+			removeListener();
+			removenewListener();
+			int i , j; 
+			if (isOK){
+				AI.SetData(chessboard.getChessBoard(), flag, comColor, playerColor);
+				ArrayList<Integer> list = AI.AIPlayer();
+				/**
+				 *for (int x=0; x<list.size();x++){
+				 *	System.out.println(list.get(x));
+				 *}
+				 */
+				int size = (int) (Math.random()*list.size());
+				j = (int)(list.get(size) / Constants.SIZE);
+				i = (int)(list.get(size) - Constants.SIZE * j);
+				while (flag[i][j]==1) {
+					j = (int)(list.get(size) / Constants.SIZE);
+					i = (int)(list.get(size) - Constants.SIZE * j);
+				}
+			}
+			else{
+			
+				i = (int) (Math.random()*Constants.SIZE);
+				j =(int) (Math.random()*Constants.SIZE);
+				while (flag[i][j]==1) {
+					i = (int) (Math.random()*Constants.SIZE);
+					j =(int) (Math.random()*Constants.SIZE);
+				} 
+			}			
+			buttonList[i][j].setIcon(new ImageIcon(color == Constants.BLACK? Theme.black:Theme.white));
+			check(i, j);
+			flag[i][j]=1;	
+			step++;
+			Retractable=false;
+			changeplayer();
+			if (!isWin){
+				AddListener();
+			}
+			
+	}
+	
+	}
+	public void changeplayer() {
+		activeplayer=activeplayer==1?2:1;
+		nextplayer=nextplayer==1?2:1;
+		System.out.println("Change to " + activeplayer);
+	}
+	public void changecolor() {
+		color= color==1?2:1;
+	}
+	public void initialNumber() {		
+	}
+	public void disturb() {
+	}
+
+}

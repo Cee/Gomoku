@@ -1,0 +1,41 @@
+package gomoku.gamepanel.special;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import gomoku.achievement.PlayTimes;
+import gomoku.gamepanel.GamePanel;
+import gomoku.gamepanel.GamePanel.CheckWinThread;
+import gomoku.main.guiboard.SingleMovableGuiboard;
+public class SingleMovablePanel extends GamePanel{
+	public  SingleMovablePanel() {
+		jbtStart.addActionListener(new StartListener());
+		jbtRetract.addActionListener(new RetractListener());
+		jbtGiveup.addActionListener(new GiveupListener());
+		jbtReview.addActionListener(new ReviewListener());
+		jbtReturn.addActionListener(new ReturnListener());
+		jbtNext.addActionListener(new NextListener());
+		jbtLast.addActionListener(new LastListener());
+		jbtAnimation.addActionListener(new AnimationListener());
+		jbtExit.addActionListener(new ExitListener());
+	}
+	class StartListener implements ActionListener{
+		public void actionPerformed (ActionEvent event ){
+			guiboard.initialNumber();
+			PlayTimes.addPlayTimes();
+			jbtRetract.setEnabled(true);
+			jbtReview.setEnabled(false);
+			jbtGiveup.setEnabled(true);
+			guiboard.renew();
+			guiboard.AddListener();
+			System.out.println("234242");
+			new CheckWinThread().start();
+		}
+	}
+	public void setguiboard() {
+		guiboard=new SingleMovableGuiboard();
+		guiboard.setOpaque(false);
+		guiboard.setBounds(150,50,520,520);
+		this.add(guiboard);
+	}
+	
+}

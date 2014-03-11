@@ -1,0 +1,212 @@
+package gomoku.netgame;
+
+import gomoku.chesshandle.ChessBoard;
+import gomoku.chesshandle.ReviewHandle;
+import gomoku.language.Language;
+import gomoku.main.Gomoku;
+import gomoku.player.HumanPlayer;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
+
+import javax.swing.JOptionPane;
+
+public class NetGamePanel extends NetUIPanel{
+	private static final long serialVersionUID = 1L;
+	protected boolean myTurn ;
+	protected int myColor ;
+	protected int otherColor ;
+	protected ChessBoard chessBoard = new ChessBoard();
+	protected int rowSelected;
+	protected int columnSelected;
+	protected boolean continueToPlay = true;
+	protected boolean waiting ;
+	protected int myplayer;
+	protected int otherplayer;	
+	protected int firstplayer=1;
+	int ifRetract = 0;
+	protected HumanPlayer player1 = new HumanPlayer("Player1");
+	protected HumanPlayer player2 = new HumanPlayer("player2");
+	ReviewHandle reviewHandle = new ReviewHandle();
+	public void exit(){
+		guiboard.isWin=true;
+		this.setVisible(false);
+		Gomoku.menuPanel.setVisible(true);
+		guiboard.color=1;
+	}
+	class ReturnListener implements ActionListener {
+		public void actionPerformed(ActionEvent event ){
+			exit();
+		}
+	}
+	class GiveupListener implements ActionListener {
+		public void actionPerformed(ActionEvent event) {
+			JOptionPane.showConfirmDialog(null, Language.DontGiveUp, Language.LaoCao, JOptionPane.DEFAULT_OPTION);
+			int n = JOptionPane.showConfirmDialog(null, Language.MakeSureToGiveUp, Language.GiveUpTitle, JOptionPane.YES_NO_OPTION);
+			if (n == JOptionPane.NO_OPTION) {
+				JOptionPane.showConfirmDialog(null, Language.PraiseSentence, Language.Praise, JOptionPane.DEFAULT_OPTION);				
+			} else {
+				JOptionPane.showConfirmDialog(null, Language.Disappointment+Language.PLAYER+guiboard.activeplayer+Language.GiveUpTitle, Language.BadPhenomenon, JOptionPane.DEFAULT_OPTION);
+				guiboard.isWin=true;
+				try {
+					giveupSocket.getOutputStream().write(1);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				guiboard.removeListener();
+			}
+		}
+	}
+	class GiveupThread extends Thread {
+		public void run() {
+			try {
+				giveupSocket.getInputStream().read();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}		
+			guiboard.isWin=true;
+			guiboard.removeListener();
+			JOptionPane.showMessageDialog(null,guiboard.color==1?Language.BLACKWIN:Language.WHITEWIN);
+		}
+	}
+	class CheckThread extends Thread {
+		public void run() {
+			while (!guiboard.isWin){
+				try {
+					sleep(200);
+				} catch (InterruptedException e) {
+					// TODO 自动生成的 catch 块
+					e.printStackTrace();
+				}
+			}
+			jbtStart.setEnabled(true);
+			jbtRetract.setEnabled(false);
+			jbtGiveup.setEnabled(false);
+			jbtReview.setEnabled(true);
+		}
+	}
+	class RetractListener implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			if (guiboard.Retractable) {
+				guiboard.unset();
+				guiboard.changecolor();
+				try {
+					guiboard.Retractable=false;
+					retractSocket.getOutputStream().write(1);
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+			}
+		}
+	}
+	class RetractThread extends Thread {
+		public void run() {
+			guiboard.Retractable=false;
+			while (!guiboard.isWin) {
+				if (!guiboard.Retractable) {
+					jbtRetract.setEnabled(false);
+				} else {
+					jbtRetract.setEnabled(true);
+				}
+				try {
+					ifRetract=retractSocket.getInputStream().read();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				if (ifRetract==1) {
+					guiboard.unset();
+					int historysize = guiboard.getHistory().size();
+					Integer temp[] = guiboard.getHistory().get(historysize-1);
+					try {
+						socket.getOutputStream().write(temp[0]);
+						socket.getOutputStream().write(temp[1]);
+					} catch (IOException e2) {
+						e2.printStackTrace();
+					}
+				}	
+			}
+		}
+	}
+	/**
+	 * 
+	 * @author luck
+	 *@version 2013.3.30
+	 * 复盘监听
+	 */
+	class ReviewListener implements ActionListener {
+		public void actionPerformed(ActionEvent event ){
+			Reviewpanel.setVisible(true);
+			guiboard.refresh();
+		}		
+	}
+	/**
+	 * 
+	 * @author luck
+	 *@version 2013.3.30
+	 * 下一步
+	 */
+		class NextListener implements ActionListener {
+			public void actionPerformed(ActionEvent event ){
+				Integer temp[] = reviewHandle.next(guiboard.getHistory());
+				if (temp != null) {
+					guiboard.SetIcon(temp);
+				}
+			}
+		
+		}
+		/**
+		 * 
+		 * @author luck
+		 *@version 2013.3.30
+		 * 上一步
+		 */
+		class LastListener implements ActionListener {
+			public void actionPerformed(ActionEvent event ){
+				Integer temp[] = reviewHandle.last(guiboard.getHistory());
+				if (temp != null) {
+					guiboard.removeIcon(temp);
+				}
+			}
+		
+		}
+		/**
+		 * 
+		 * @author luck
+		 *@version 2013.3.30
+		 * 动画
+		 */
+		class AnimationListener implements ActionListener {
+			public void actionPerformed(ActionEvent event ){
+				guiboard.refresh();
+				reviewHandle.setSequence(0);
+				jbtNext.setEnabled(false);
+				jbtLast.setEnabled(false);
+				jbtAnimation.setEnabled(false);
+				new ReviewThread().start();
+
+			}
+			class ReviewThread extends Thread {
+				public void run() {
+					
+					int size = guiboard.getHistory().size();
+					for (int i = 0; i < size; i++) {
+						try {
+							Integer temp[] = reviewHandle.next(guiboard.getHistory());
+							if (temp != null) {
+								guiboard.SetIcon(temp);
+							}
+
+							Thread.sleep(500);
+							
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+					}
+					jbtAnimation.setEnabled(true);
+					jbtNext.setEnabled(true);
+					jbtLast.setEnabled(true);
+				}
+			}
+		}			
+
+}

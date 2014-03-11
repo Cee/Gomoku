@@ -1,0 +1,158 @@
+package gomoku.gamepanel;
+import gomoku.constants.Constants;
+import gomoku.language.Language;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;;
+/**
+ * 
+ * @author luck
+ *@version 2013.3.31 23:28
+ *人机对战面板
+ */
+public class SingleGamePanel extends GamePanel {
+	private static final long serialVersionUID = 1L;	
+	public int RetractNumber;
+	public SingleGamePanel() {
+		jbtExit.addActionListener(new ExitListener());
+		jbtStart.addActionListener(new StartListener());
+		jbtRetract.addActionListener(new RetractListener());
+		jbtGiveup.addActionListener(new GiveupListener());
+		jbtReview.addActionListener(new ReviewListener());
+		jbtReturn.addActionListener(new ReturnListener());
+		jbtNext.addActionListener(new NextListener());
+		jbtLast.addActionListener(new LastListener());
+		jbtAnimation.addActionListener(new AnimationListener());	
+	}
+	/**
+	 * 
+	 * @author luck
+	 * @version 2013.4.2 15:22
+	 * 人机对战的悔棋    
+	 *     
+	 */
+	class RetractListener implements ActionListener {
+		public void actionPerformed(ActionEvent event ){
+			if (guiboard.getChessboard().getHistory().size()<= 5){
+				return;
+			}
+			guiboard.unset();
+			RetractNumber++;
+			if (guiboard.activeplayer == 2) {
+				guiboard.removeListener();
+			} else {
+				guiboard.AddListener();
+			}
+		}	
+	}
+	/**
+	 * 
+	 * @author luck
+	 *@version 2013.4.2 15:24
+	 * 开始按钮监听
+	 */
+	class StartListener implements ActionListener {
+		public void actionPerformed (ActionEvent event ){
+			guiboard.isWin=true;
+			guiboard.activeplayer=1;
+			RetractNumber = 0;
+			whofirst=0;
+			firstplayer=1;
+			jlbPlayer1.setText("");
+			jlbPlayer2.setText("");
+			jbtGiveup.setEnabled(true);
+			jbtRetract.setEnabled(true);
+			jbtReview.setEnabled(false);
+			guiboard.isOK=false;
+			guiboard.renew();
+			guiboard.AddListener();
+			new TimeThread().start();
+			rule();
+
+		}
+		public void rule(){
+			String[] Players = {guiboard.player1.getName(),guiboard.player2.getName()}; 	
+			String select = guiboard.player1.choosefirst(Players);
+			if (select.equals(guiboard.player2.getName())){
+				firstplayer = 2;
+				guiboard.changeplayer();
+			}			
+			new RuleThread().start();
+		}
+		
+		class RuleThread extends Thread {
+			public void run() {
+			if (guiboard.activeplayer==2){
+				while (guiboard.step <= 3) {
+					guiboard.player2.play();
+					guiboard.activeplayer=2;
+				}
+			} else {
+				while (guiboard.step <= 3) {
+					try {
+						sleep(100);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+			guiboard.changeplayer();
+			selectSwap = (firstplayer ==2?guiboard.player1:guiboard.player2).choose();
+			if (selectSwap.equals(Language.CHOOSEWHITE)){
+				color_of_Player1= firstplayer==1?Constants.BLACK:Constants.WHITE;
+				color_of_Player2= firstplayer==1?Constants.WHITE:Constants.BLACK;
+				firstplayer = firstplayer==1?2:1;
+			}
+				else if (selectSwap.equals(Language.DOMORE)) {
+					if (guiboard.activeplayer==1) {
+						while (guiboard.step<=5){
+							try {
+								sleep(100);
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}
+						}		
+					} else {
+						while (guiboard.step<=5) {
+							guiboard.player2.play();
+						}
+					}
+					guiboard.changeplayer();
+					selectSwap = (firstplayer ==1?guiboard.player1:guiboard.player2).chooseagain();
+					if (selectSwap == Language.CHOOSEBLACK) {
+						color_of_Player1= firstplayer==1?Constants.BLACK:Constants.WHITE;
+						color_of_Player2= firstplayer==1?Constants.WHITE:Constants.BLACK;
+						firstplayer = firstplayer==1?2:1;						
+						guiboard.changeplayer();
+					} 
+				} else {
+					 color_of_Player1= firstplayer==2?Constants.BLACK:Constants.WHITE;
+						color_of_Player2= firstplayer==2?Constants.WHITE:Constants.BLACK;
+					guiboard.changeplayer();
+				}
+			jlbPlayer1.setText(color_of_Player1==Constants.BLACK?"黑方":"白方");
+			jlbPlayer2.setText(color_of_Player1==Constants.WHITE?"黑方":"白方");
+			guiboard.comColor=firstplayer;
+			guiboard.playerColor=firstplayer==1?2:1;
+			if (guiboard.activeplayer==2) {
+				
+				guiboard.player2.play();
+			}
+			guiboard.isOK=true;
+			new RemindThread().start();
+			while (!guiboard.isWin){
+				try {
+					sleep(100);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+			jbtReview.setEnabled(true);
+			jbtRetract.setEnabled(false);
+			jbtGiveup.setEnabled(false);
+			}
+			
+	}
+	}
+
+	
+}

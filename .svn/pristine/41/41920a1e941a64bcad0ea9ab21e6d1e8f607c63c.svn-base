@@ -1,0 +1,64 @@
+package gomoku.theme;
+/**
+ * @author luck NorviNS松鼠 
+ * @version 2013/3/30
+ * 存储图片地址
+ * 主题包制作：NorviNS松鼠
+ */
+public class Theme {
+	public static String choose;
+	public static String theme;
+	public static String arrow;
+	public static String menubg;
+	public static String guibg;
+	public static String gamebg;
+	public static String black;
+	public static String white;
+	public static String chooseBg;
+	public static String red;
+	public static String dialogBg;
+	public static String black_choose;
+	public static String white_choose;
+	public static String loading;
+	public static String whitePlayer;
+	public static String blackPlayer;
+	public static void loadTheme() {
+		arrow = "png/"+theme+"/arrow.png";
+		menubg = "png/"+theme+"/menuBg.png";
+		guibg = "png/"+ theme+"/guiBg.png";
+		choose = "png/"+ theme+"/choose.png";
+		gamebg = "png/"+ theme+"/gameBg.png";
+		black = "png/"+ theme+"/black.png";
+		white = "png/"+ theme+"/white.png";
+		red = "png/"+ theme+"/red.png";
+		black_choose = "png/"+ theme+"/black_choose.png";
+		white_choose = "png/"+ theme+"/white_choose.png";
+		chooseBg = "png/"+ theme+"/chooseBg.png";
+		/**
+		 * DialogBg
+		 */
+		dialogBg= "png/"+theme+"/dialogBg.png";
+		
+		loading = "png/"+theme+"/loading.gif";
+		/*
+		 * Game PlayerShell
+		 */
+		whitePlayer = "png/"+theme+"/whitePlayer.png";
+		blackPlayer = "png/"+theme+"/blackPlayer.png";
+	}
+	
+	public static void load(String theme) {
+		switch (theme) {
+		case "StarNight":Theme.theme="StarNight";
+			
+			break;
+		case "Donuts": Theme.theme = "Donuts";
+			System.out.println(Theme.theme);
+			break;
+		default:
+			break;
+		}
+		loadTheme();
+	}
+
+}

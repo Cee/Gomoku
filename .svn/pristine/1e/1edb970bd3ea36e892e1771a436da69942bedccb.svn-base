@@ -1,0 +1,16 @@
+package gomoku.sound;
+/**
+ * 
+ * @author luck
+ *@version 2013.3/30
+ * 用于存放音乐与音效的路径
+ */
+public class Sound {
+	public static String BGM;
+	public static String move = "move";	
+	public static void load(String music) {
+		BGM = music;
+	}
+}
+
+

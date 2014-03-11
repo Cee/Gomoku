@@ -1,0 +1,42 @@
+package gomoku.gamepanel.special;
+
+import gomoku.achievement.PlayTimes;
+import gomoku.gamepanel.GamePanel;
+import gomoku.main.guiboard.DoubleMoveableGuiboard;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+public class DoubleMovablePanel extends GamePanel{
+	private static final long serialVersionUID = 1L;
+	public DoubleMovablePanel() {
+		jbtStart.addActionListener(new StartListener());
+		jbtRetract.addActionListener(new RetractListener());
+		jbtGiveup.addActionListener(new GiveupListener());
+		jbtReview.addActionListener(new ReviewListener());
+		jbtReturn.addActionListener(new ReturnListener());
+		jbtNext.addActionListener(new NextListener());
+		jbtLast.addActionListener(new LastListener());
+		jbtAnimation.addActionListener(new AnimationListener());
+		jbtExit.addActionListener(new ExitListener());
+	}
+	public void setguiboard() {	
+		guiboard=new DoubleMoveableGuiboard();
+		guiboard.setOpaque(false);
+		guiboard.setBounds(150,50,520,520);
+		this.add(guiboard);
+	}
+	class StartListener implements ActionListener{
+		public void actionPerformed (ActionEvent event ){
+			guiboard.initialNumber();
+			PlayTimes.addPlayTimes();
+			jbtRetract.setEnabled(true);
+			jbtReview.setEnabled(false);
+			jbtGiveup.setEnabled(true);
+			guiboard.renew();
+			guiboard.AddListener();
+			System.out.println("234242");
+			new CheckWinThread().start();
+		}
+	}
+}

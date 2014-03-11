@@ -1,0 +1,97 @@
+package gomoku.netgame;
+
+import gomoku.main.Gomoku;
+import gomoku.main.Start;
+import gomoku.theme.Theme;
+
+import java.awt.Event;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
+public class WaitingPanel extends JPanel {
+	JButton jbtServer;
+	JButton jbtClient;
+	JButton jbtReturn;
+	JLabel jlbloading;
+	GomokuServer server = new GomokuServer();
+	public WaitingPanel(){
+		ImageIcon gameBg = new ImageIcon(Theme.gamebg);
+		JLabel gameBgLabel = new JLabel(gameBg); 
+		gameBgLabel.setBounds(0,0,gameBg.getIconWidth(),gameBg.getIconHeight());
+		jbtServer= new JButton("建立主机");
+		jbtClient= new JButton("加入房间");
+		jbtReturn = new JButton("回到主菜单");
+		this.add(jbtClient);
+		this.add(jbtServer);
+		this.add(jbtReturn);
+		this.add(gameBgLabel);		
+		jbtServer.addActionListener(new ServerListener());
+		jbtClient.addActionListener(new ClientListener());
+		jbtReturn.addActionListener(new ReturnListener());
+	}
+	class ReturnListener implements ActionListener{
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			returntoMenu();
+		}
+	}
+	public void returntoMenu(){
+		this.setVisible(false);
+		Gomoku.menuPanel.setVisible(true);
+	}
+	class WaitingThread extends Thread {
+		public void run(){ 
+			ImageIcon loadingIcon = new ImageIcon(Theme.loading);
+			jlbloading = new JLabel(loadingIcon);
+			jlbloading.setBounds(300,200,loadingIcon.getIconWidth(),loadingIcon.getIconHeight());
+			JFrame loadingFrame = new JFrame();
+//			loadingFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+			loadingFrame.setSize(400, 200);
+			loadingFrame.setVisible(true);
+			loadingFrame.add(jlbloading);
+			loadingFrame.setResizable(false);
+			loadingFrame.setLocationRelativeTo(null);
+			while (!server.isLinked){
+				try {
+					sleep(100);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}			
+			loadingFrame.setVisible(false);
+			server.setVisible(true);
+			Start.gomoku.setVisible(true);
+		}
+	}
+	public void AddServer(){	
+		this.setVisible(false);
+		Start.gomoku.setVisible(false);
+		Start.gomoku.add(server);
+		new WaitingThread().start();
+		server.link();
+	}
+	class ServerListener implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			AddServer();
+		}
+		
+	}
+	public void AddClient(){
+		this.setVisible(false);
+		Start.gomoku.add(new GomokuClient("172.25.136.180"));
+	}
+	class ClientListener implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			AddClient();
+		}
+		
+	}
+}

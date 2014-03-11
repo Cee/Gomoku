@@ -1,0 +1,31 @@
+package gomoku.option;
+
+import gomoku.language.Language;
+import gomoku.theme.Theme;
+
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
+public class OptionPanel extends JPanel{
+	private JLabel jlbTheme;
+	private JLabel jlbLanguage;
+	private JLabel jlbMusic;
+	private JLabel jlbCharacter;
+	private JPanel themePanel;
+	private JPanel languagePanel;
+	private JPanel musicJPanel;
+	private JPanel characterPanel;
+	private JLabel gameBgLabel;
+	public OptionPanel(){
+		this.setVisible(true);
+		this.setLayout(null);
+		ImageIcon gameBg = new ImageIcon(Theme.gamebg);
+		gameBgLabel = new JLabel(gameBg); 
+		gameBgLabel.setBounds(0,0,gameBg.getIconWidth(),gameBg.getIconHeight());
+		jlbTheme = new JLabel("Choose Theme");
+		jlbTheme.setBounds(20,50,100,50);
+		this.add(gameBgLabel);
+	}
+
+}
